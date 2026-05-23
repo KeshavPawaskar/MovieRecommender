@@ -1,0 +1,21 @@
+{
+  "name": "movie-recommender",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Weekend movie recommendation app",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev --workspace backend",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "start": "npm run dev:backend"
+  },
+  "overrides": {
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "author": "Keshav Pawaskar",
+  "license": "MIT"
+}
