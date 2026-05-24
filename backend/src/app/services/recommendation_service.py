@@ -8,7 +8,8 @@ PICK_LABELS = ["Best pick", "Comfort pick", "Surprise pick"]
 
 
 class RecommendationService:
-    def recommend(self, movies: List[Dict], preferences: Dict):
+    def recommend(self, movies: List[Dict], preferences: Dict, feedback: Dict = None):
+        feedback = feedback or {}
         candidates = [movie for movie in movies if self._passes_filters(movie, preferences)]
 
         if not candidates:
@@ -23,7 +24,15 @@ class RecommendationService:
         for index, movie in enumerate(candidates):
             platform_matches = self._platform_matches(movie, preferences)
             genre_matches = self._genre_matches(movie, preferences)
-            score = self._hybrid_score(movie, preferences, similarity_scores[index], platform_matches, genre_matches, index)
+            score = self._hybrid_score(
+                movie,
+                preferences,
+                similarity_scores[index],
+                platform_matches,
+                genre_matches,
+                feedback.get(movie["id"]),
+                index,
+            )
 
             scored.append(
                 {
@@ -57,7 +66,7 @@ class RecommendationService:
 
         return True
 
-    def _hybrid_score(self, movie, preferences, similarity, platform_matches, genre_matches, index):
+    def _hybrid_score(self, movie, preferences, similarity, platform_matches, genre_matches, feedback_action, index):
         genre_variety = max(len(movie["genres"]) - len(genre_matches), 0)
         recency_boost = min(max(movie["year"] - 2000, 0), 20) * 0.6
         ml_score = similarity * 100
@@ -65,7 +74,13 @@ class RecommendationService:
         genre_score = len(genre_matches) * 18
         platform_score = len(platform_matches) * 7
         surprise_score = preferences["surprise"] * genre_variety * 0.08
-        return quality_score + ml_score + genre_score + platform_score + recency_boost + surprise_score - index * 0.2
+        feedback_score = {
+            "liked": 22,
+            "saved": 14,
+            "watched": -35,
+            "disliked": -90,
+        }.get(feedback_action, 0)
+        return quality_score + ml_score + genre_score + platform_score + recency_boost + surprise_score + feedback_score - index * 0.2
 
     def _movie_text(self, movie: Dict) -> str:
         parts = [

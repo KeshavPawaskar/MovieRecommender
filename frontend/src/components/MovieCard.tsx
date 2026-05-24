@@ -3,16 +3,25 @@ import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import ThumbDownAltOutlinedIcon from "@mui/icons-material/ThumbDownAltOutlined";
 import ThumbUpAltOutlinedIcon from "@mui/icons-material/ThumbUpAltOutlined";
 import { Box, Button, Card, CardContent, CardMedia, Chip, Typography } from "@mui/material";
+import type { ReactElement } from "react";
 import { useState } from "react";
+
+import type { FeedbackAction, Movie } from "../types";
 
 const feedbackActions = [
   { value: "liked", label: "Like", icon: <ThumbUpAltOutlinedIcon /> },
   { value: "saved", label: "Save", icon: <BookmarkAddOutlinedIcon /> },
   { value: "watched", label: "Watched", icon: <CheckCircleOutlinedIcon /> },
   { value: "disliked", label: "Skip", icon: <ThumbDownAltOutlinedIcon /> }
-];
+] satisfies Array<{ value: FeedbackAction; label: string; icon: ReactElement }>;
 
-export function MovieCard({ movie, feedback, onFeedback }) {
+type MovieCardProps = {
+  movie: Movie;
+  feedback?: FeedbackAction;
+  onFeedback: (movieId: string, action: FeedbackAction) => void;
+};
+
+export function MovieCard({ movie, feedback, onFeedback }: MovieCardProps) {
   const [posterFailed, setPosterFailed] = useState(false);
 
   return (

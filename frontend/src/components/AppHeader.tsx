@@ -1,5 +1,7 @@
 import { Box, Paper, Stack, Typography } from "@mui/material";
 
+import type { Preferences } from "../types";
+
 function getWeekendLabel() {
   const now = new Date();
   const formatter = new Intl.DateTimeFormat("en", { month: "short", day: "numeric" });
@@ -10,7 +12,11 @@ function getWeekendLabel() {
   return `${formatter.format(friday)} - ${formatter.format(sunday)}`;
 }
 
-export function AppHeader({ preferences }) {
+type AppHeaderProps = {
+  preferences: Preferences;
+};
+
+export function AppHeader({ preferences }: AppHeaderProps) {
   const genreLabel = preferences.genres.length ? preferences.genres.slice(0, 2).join(" + ") : "Open to anything";
   const platformLabel = preferences.platforms.length
     ? `Looking on ${preferences.platforms.slice(0, 3).join(", ")}`

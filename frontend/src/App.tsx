@@ -1,19 +1,20 @@
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { Alert, Box, Button, CircularProgress, Container, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { AppHeader } from "./components/AppHeader.jsx";
-import { MovieCard } from "./components/MovieCard.jsx";
-import { PreferencePanel } from "./components/PreferencePanel.jsx";
-import { useFeedback } from "./hooks/useFeedback.js";
-import { defaultPreferences, fetchOptions, fetchRecommendations } from "./services/api.js";
+import { AppHeader } from "./components/AppHeader";
+import { MovieCard } from "./components/MovieCard";
+import { PreferencePanel } from "./components/PreferencePanel";
+import { useFeedback } from "./hooks/useFeedback";
+import { defaultPreferences, fetchOptions, fetchRecommendations } from "./services/api";
+import type { Movie, PreferenceOptions, Preferences } from "./types";
 
 export default function App() {
-  const [options, setOptions] = useState(null);
-  const [preferences, setPreferences] = useState(defaultPreferences);
-  const [recommendations, setRecommendations] = useState([]);
+  const [options, setOptions] = useState<PreferenceOptions | null>(null);
+  const [preferences, setPreferences] = useState<Preferences>(defaultPreferences);
+  const [recommendations, setRecommendations] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const { feedback, updateFeedback } = useFeedback();
+  const { feedback, feedbackRevision, updateFeedback } = useFeedback();
 
   useEffect(() => {
     fetchOptions()
@@ -30,7 +31,7 @@ export default function App() {
       })
       .catch(() => setError("Could not load recommendations from the backend."))
       .finally(() => setLoading(false));
-  }, [preferences]);
+  }, [preferences, feedbackRevision]);
 
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 1.25, md: 4 } }}>

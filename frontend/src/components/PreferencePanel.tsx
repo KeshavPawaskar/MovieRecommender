@@ -13,16 +13,25 @@ import {
   Typography
 } from "@mui/material";
 
+import type { Preferences, PreferenceOptions } from "../types";
+
 const runtimeOptions = [
   { value: "any", label: "Any length" },
   { value: "short", label: "Under 2 hours" },
   { value: "long", label: "Long movies okay" }
-];
+] satisfies Array<{ value: Preferences["runtime"]; label: string }>;
 
 const ratingOptions = [7, 7.5, 8];
 
-function ToggleGroup({ label, values, selectedValues, onChange }) {
-  function handleToggle(value) {
+type ToggleGroupProps = {
+  label: string;
+  values: string[];
+  selectedValues: string[];
+  onChange: (value: string[]) => void;
+};
+
+function ToggleGroup({ label, values, selectedValues, onChange }: ToggleGroupProps) {
+  function handleToggle(value: string) {
     const next = selectedValues.includes(value)
       ? selectedValues.filter((item) => item !== value)
       : [...selectedValues, value];
@@ -58,13 +67,19 @@ function ToggleGroup({ label, values, selectedValues, onChange }) {
   );
 }
 
-export function PreferencePanel({ options, preferences, onPreferenceChange }) {
+type PreferencePanelProps = {
+  options: PreferenceOptions | null;
+  preferences: Preferences;
+  onPreferenceChange: (preferences: Preferences) => void;
+};
+
+export function PreferencePanel({ options, preferences, onPreferenceChange }: PreferencePanelProps) {
   const countries = options?.countries || [];
   const platforms = options?.platforms || [];
   const genres = options?.genres || [];
   const countryValue = countries.some((country) => country.code === preferences.country) ? preferences.country : "";
 
-  function update(key, value) {
+  function update<Key extends keyof Preferences>(key: Key, value: Preferences[Key]) {
     onPreferenceChange({ ...preferences, [key]: value });
   }
 

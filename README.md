@@ -16,7 +16,15 @@ MovieRecommender/
 - Choose favorite genres.
 - Tune runtime, minimum rating, and "comfort vs surprise".
 - Get three weekend picks with poster, title, year, genres, ratings, cast, director, platform availability, and a short non-spoiler summary.
-- Mark movies as liked, disliked, watched, or saved for later. Feedback is stored in the browser.
+- Mark movies as liked, disliked, watched, or saved for later.
+
+## Phase 2
+
+- Store the movie catalog and feedback in SQLite.
+- Sync feedback through the Python backend instead of relying only on browser storage.
+- Re-rank recommendations when a user likes, saves, watches, or skips a movie.
+- Keep the frontend in TypeScript for safer API and component contracts.
+- Keep a TMDB refresh endpoint ready for dynamic catalog imports when `TMDB_API_KEY` is configured.
 
 ## Run Locally
 
@@ -53,9 +61,10 @@ http://localhost:5173
 
 ## Current Stack
 
-- Frontend: React, Vite, Material UI
+- Frontend: React, TypeScript, Vite, Material UI
 - Backend: Python, FastAPI, Uvicorn
 - Recommendation engine: scikit-learn TF-IDF and cosine similarity
+- Database: SQLite
 - Data: Seed movie catalog in `backend/src/app/data/seed_movies.py`
 - Dynamic data path: optional TMDB weekly trending fetch when `TMDB_API_KEY` is present
 
