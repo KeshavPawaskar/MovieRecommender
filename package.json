@@ -4,11 +4,10 @@
   "private": true,
   "description": "Weekend movie recommendation app",
   "workspaces": [
-    "frontend",
-    "backend"
+    "frontend"
   ],
   "scripts": {
-    "dev:backend": "npm run dev --workspace backend",
+    "dev:backend": "backend/.venv/bin/python -m uvicorn app.main:app --app-dir backend/src --host 127.0.0.1 --port 4000 --reload",
     "dev:frontend": "npm run dev --workspace frontend",
     "start": "npm run dev:backend"
   },
