@@ -1,0 +1,1 @@
+"""MovieRecommender backend application."""

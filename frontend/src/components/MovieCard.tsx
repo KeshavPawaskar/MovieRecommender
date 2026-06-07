@@ -1,114 +1,41 @@
-import BookmarkAddOutlinedIcon from "@mui/icons-material/BookmarkAddOutlined";
-import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
-import ThumbDownAltOutlinedIcon from "@mui/icons-material/ThumbDownAltOutlined";
-import ThumbUpAltOutlinedIcon from "@mui/icons-material/ThumbUpAltOutlined";
-import { Box, Button, Card, CardContent, CardMedia, Chip, Typography } from "@mui/material";
-import type { ReactElement } from "react";
-import { useState } from "react";
+import { Box, Card, CardContent, CardMedia, Chip, Typography } from "@mui/material";
 
-import type { FeedbackAction, Movie } from "../types";
+import type { FeedbackType } from "../types/feedback";
+import type { RecommendationMovie } from "../types/movie";
+import { FeedbackButtons } from "./FeedbackButtons";
 
-const feedbackActions = [
-  { value: "liked", label: "Like", icon: <ThumbUpAltOutlinedIcon /> },
-  { value: "saved", label: "Save", icon: <BookmarkAddOutlinedIcon /> },
-  { value: "watched", label: "Watched", icon: <CheckCircleOutlinedIcon /> },
-  { value: "disliked", label: "Skip", icon: <ThumbDownAltOutlinedIcon /> }
-] satisfies Array<{ value: FeedbackAction; label: string; icon: ReactElement }>;
+interface MovieCardProps {
+  movie: RecommendationMovie;
+  feedbackPending: boolean;
+  onFeedback: (movieId: number, feedbackType: FeedbackType) => void;
+}
 
-type MovieCardProps = {
-  movie: Movie;
-  feedback?: FeedbackAction;
-  onFeedback: (movieId: string, action: FeedbackAction) => void;
-};
-
-export function MovieCard({ movie, feedback, onFeedback }: MovieCardProps) {
-  const [posterFailed, setPosterFailed] = useState(false);
-
+export function MovieCard({ movie, feedbackPending, onFeedback }: MovieCardProps) {
   return (
     <Card variant="outlined" sx={{ height: "100%", overflow: "hidden", boxShadow: "0 8px 24px rgba(24, 26, 31, 0.08)" }}>
-      <Box sx={{ position: "relative", aspectRatio: "2 / 3", bgcolor: "#20242d" }}>
-        {posterFailed ? (
-          <Box
-            sx={{
-              position: "absolute",
-              inset: 0,
-              display: "grid",
-              placeItems: "center",
-              p: 3,
-              color: "rgba(255,255,255,0.78)",
-              fontWeight: 900,
-              textAlign: "center",
-              background: "linear-gradient(135deg, #1f2937, #0f766e)"
-            }}
-          >
-            {movie.title} poster unavailable
-          </Box>
+      <Box sx={{ aspectRatio: "2 / 3", bgcolor: "#111827", position: "relative" }}>
+        {movie.poster_url ? (
+          <CardMedia component="img" image={movie.poster_url} alt={`${movie.title} poster`} sx={{ width: "100%", height: "100%", objectFit: "cover" }} />
         ) : (
-          <CardMedia
-            component="img"
-            image={movie.poster}
-            alt={`${movie.title} poster`}
-            onError={() => setPosterFailed(true)}
-            sx={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
+          <Box sx={{ display: "grid", placeItems: "center", height: "100%", color: "white", p: 3, textAlign: "center" }}>
+            Poster unavailable
+          </Box>
         )}
-        <Chip
-          label={movie.pickLabel}
-          color="primary"
-          size="small"
-          sx={{ position: "absolute", top: 12, left: 12, color: "common.white", fontWeight: 900 }}
-        />
+        <Chip label={`Score ${movie.score.toFixed(2)}`} color="primary" size="small" sx={{ position: "absolute", top: 12, left: 12, color: "white", fontWeight: 900 }} />
       </Box>
-
       <CardContent>
-        <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2, mb: 1 }}>
-          <Typography variant="h5" component="h3" sx={{ fontWeight: 900 }}>
-            {movie.title}
-          </Typography>
-          <Typography sx={{ color: "text.secondary", fontWeight: 800 }}>{movie.year}</Typography>
-        </Box>
-
-        <Typography sx={{ minHeight: 72, mb: 2, color: "#3e434c", lineHeight: 1.5 }}>{movie.summary}</Typography>
-
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 1.5 }}>
-          {movie.genres.map((genre) => (
-            <Chip key={genre} label={genre} />
-          ))}
-          <Chip label={`${movie.runtime} min`} />
-        </Box>
-
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 1.5 }}>
-          <Chip color="secondary" variant="outlined" label={`IMDb ${movie.imdb}`} />
-          <Chip color="secondary" variant="outlined" label={`Rotten Tomatoes ${movie.rottenTomatoes}`} />
-        </Box>
-
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-          <Chip label={`Director: ${movie.director}`} />
-          <Chip label={`Cast: ${movie.actors.join(", ")}`} />
-        </Box>
-
-        <Box sx={{ p: 1.5, mb: 2, border: "1px solid #cde8e3", borderRadius: 2, bgcolor: "#eef8f6", color: "#164e48", fontWeight: 900 }}>
-          Watch on {movie.platformMatches.join(", ")}
-        </Box>
-
-        <Typography color="text.secondary" sx={{ mb: 2, lineHeight: 1.5 }}>
-          {movie.reason}
+        <Typography variant="h5" component="h3" sx={{ fontWeight: 900 }}>
+          {movie.title} <Typography component="span" color="text.secondary">({movie.release_year || "N/A"})</Typography>
         </Typography>
-
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-          {feedbackActions.map((action) => (
-            <Button
-              key={action.value}
-              variant={feedback === action.value ? "contained" : "outlined"}
-              color={feedback === action.value ? "secondary" : "inherit"}
-              startIcon={action.icon}
-              onClick={() => onFeedback(movie.id, action.value)}
-              sx={{ flex: "1 1 130px" }}
-            >
-              {action.label}
-            </Button>
-          ))}
+        <Typography sx={{ mt: 1.5, mb: 2, color: "text.secondary", lineHeight: 1.55 }}>{movie.overview || "Overview unavailable."}</Typography>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+          {movie.genres.map((genre) => <Chip key={genre} label={genre} />)}
+          <Chip label={`TMDB ${movie.vote_average.toFixed(1)}`} color="secondary" variant="outlined" />
         </Box>
+        <Typography variant="body2" sx={{ mb: 1 }}><strong>Director:</strong> {movie.director || "Unknown"}</Typography>
+        <Typography variant="body2" sx={{ mb: 2 }}><strong>Cast:</strong> {movie.actors.slice(0, 3).join(", ") || "Unknown"}</Typography>
+        <Typography color="text.secondary" sx={{ mb: 2 }}>{movie.reason}</Typography>
+        <FeedbackButtons disabled={feedbackPending} onFeedback={(feedbackType) => onFeedback(movie.id, feedbackType)} />
       </CardContent>
     </Card>
   );

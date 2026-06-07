@@ -8,7 +8,11 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": "http://127.0.0.1:4000"
+      "/movies": "http://127.0.0.1:4000",
+      "/recommendations": "http://127.0.0.1:4000",
+      "/feedback": "http://127.0.0.1:4000",
+      "/tmdb": "http://127.0.0.1:4000",
+      "/health": "http://127.0.0.1:4000"
     }
   }
 });

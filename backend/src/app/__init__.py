@@ -1,1 +1,0 @@
-"""MovieRecommender backend package."""
